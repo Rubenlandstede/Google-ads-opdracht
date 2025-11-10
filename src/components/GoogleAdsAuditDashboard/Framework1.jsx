@@ -78,7 +78,7 @@ const Framework1 = ({
                       {sub.description}
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-3">
+                    <div className="flex flex-col gap-3">
                       <select
                         value={scores[pillar.key][sub.key]}
                         onChange={(e) =>

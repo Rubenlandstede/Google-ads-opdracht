@@ -1,35 +1,20 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Add this AT THE TOP
 import TopDashboard from "./TopDashboard";
 import Framework1 from "./Framework1";
 import Framework2 from "./Framework2";
-import Framework3 from "./Framework3"; // 
-
-
-import {
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Target,
-  DollarSign,
-  Globe,
-  Layout,
-  FileText,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import Framework3 from "./Framework3";
 import { pillars } from "./pillarsData";
 import {
-  getScoreColor,
-  getScoreIcon,
-  getScoreLabel,
   calculateTotalScore,
   calculatePercentage,
 } from "./helpers.jsx";
-import { generatePDF } from "./PdfReport";
+
 import "./styles.css";
 
 const GoogleAdsAuditDashboard = () => {
+  const navigate = useNavigate(); // ✅ Add this INSIDE your component
+
   const [scores, setScores] = useState(() =>
     Object.fromEntries(
       pillars.map((p) => [
@@ -38,6 +23,7 @@ const GoogleAdsAuditDashboard = () => {
       ])
     )
   );
+
   const [context, setContext] = useState({});
   const [expandedPillars, setExpandedPillars] = useState({});
 
@@ -64,41 +50,63 @@ const GoogleAdsAuditDashboard = () => {
 
   const totalScore = calculateTotalScore(scores, pillars);
   const percentage = calculatePercentage(scores, pillars);
+  const safeScores = JSON.parse(JSON.stringify(scores));
+  console.log("Rendering Dashboard with scores:", safeScores);
+  return (
+      <div className="dashboard-container">
+      {/* 🔹 Top Section */}
+      <TopDashboard
+        percentage={percentage}
+        totalScore={totalScore}
+        pillars={pillars}
+        scores={scores}
+      />
 
- return (
-  <div className="dashboard-container">
-    {/* 🔹 Top gedeelte met donut en overzicht */}
-    <TopDashboard
-      percentage={percentage}
-      totalScore={totalScore}
-      pillars={pillars}
-      scores={scores}
-    />
+      {/* 🔹 Frameworks */}
+      <Framework1
+        pillars={pillars}
+        scores={scores}
+        expandedPillars={expandedPillars}
+        togglePillar={togglePillar}
+        updateScore={updateScore}
+        updateContext={updateContext}
+        context={context}
+      />
 
-    {/* 🔹 Framework 1 overzicht */}
-    <Framework1
-      pillars={pillars}
-      scores={scores}
-      expandedPillars={expandedPillars}
-      togglePillar={togglePillar}
-      updateScore={updateScore}
-      updateContext={updateContext}
-      context={context}
-    />
+      <Framework2 pillars={pillars} scores={scores} />
+      <Framework3 pillars={pillars} scores={scores} context={context} />
 
-    <Framework2 pillars={pillars} scores={scores} />
-    <Framework3 pillars={pillars} scores={scores} />
+      
+      <button
+  className="pdf-button"
+  onClick={() => {
+    // Clone safely to remove React symbols
+    const dataToSend = {
+      scores: JSON.parse(JSON.stringify(scores)),
+      pillars: JSON.parse(JSON.stringify(pillars)),
+      context: JSON.parse(JSON.stringify(context)),
+      totalScore,
+      percentage,
+    };
+
+    console.log("📤 Sending data to PDF page:", dataToSend); // debug log
+
+    navigate("/pdf", { state: dataToSend });
+  }}
+>
+  Genereer PDF
+</button>
 
 
 
-    {/* 🔹 PDF export knop */}
-    <button className="pdf-button" onClick={() => generatePDF(scores, pillars)}>
-      Genereer PDF
-    </button>
-  </div>
-);
 
+
+
+
+    </div>
+  );
 };
 
 export default GoogleAdsAuditDashboard;
+
 

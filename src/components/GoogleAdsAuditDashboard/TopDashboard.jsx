@@ -21,6 +21,7 @@ const TopDashboard = ({ percentage, totalScore, pillars, scores }) => {
     (sum, p) => sum + p.subcriteria.length,
     0
   );
+  
 
   return (
     <div className="w-full flex flex-col items-center bg-[#f5f8ff] py-10 px-6 rounded-2xl shadow-sm mb-10">
