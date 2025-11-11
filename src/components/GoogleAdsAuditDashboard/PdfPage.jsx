@@ -33,6 +33,25 @@ const PdfPage = () => {
     onbekend: "bg-gray-100 text-gray-700 border-gray-300",
   };
 
+  // ✅ Find Framework 3 pillar
+  const framework3 = pillars.find(
+    (pillar) => pillar.name?.toLowerCase().includes("framework 3") || pillar.key === "framework3"
+  );
+
+  // ✅ Group subcriteria by status (Goed, Matig, Slecht)
+  const grouped = { goed: [], matig: [], slecht: [], onbekend: [] };
+
+  if (framework3) {
+    framework3.subcriteria.forEach((sub) => {
+      const text = context?.[`${framework3.key}_${sub.key}`] || "";
+      const status = getStatus(text);
+      grouped[status].push({
+        name: sub.name,
+        text: text || "Geen opmerking ingevuld",
+      });
+    });
+  }
+
   return (
     <div className="min-h-screen bg-[#f5f8ff] py-10 px-6 flex flex-col items-center">
       {/* 🔹 Titel */}
@@ -87,47 +106,52 @@ const PdfPage = () => {
           Framework 3 Samenvatting
         </h3>
 
-        {pillars.map((pillar) => (
-          <div key={pillar.key} className="mb-8">
-            {/* Pilar Titel */}
-            <h4 className="text-lg font-semibold text-gray-800 mb-3">
-              {pillar.name}
-            </h4>
-
-            {/* Subcriteria */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {pillar.subcriteria.map((sub) => {
-                const text = context[`${pillar.key}_${sub.key}`];
-                const status = getStatus(text);
-                return (
-                  <div
-                    key={sub.key}
-                    className={`p-4 rounded-xl border ${statusStyles[status]} shadow-sm`}
+        {framework3 ? (
+          ["goed", "matig", "slecht"].map(
+            (status) =>
+              grouped[status].length > 0 && (
+                <div key={status} className="mb-8">
+                  <h4
+                    className={`text-lg font-semibold mb-4 ${
+                      status === "goed"
+                        ? "text-green-600"
+                        : status === "matig"
+                        ? "text-yellow-600"
+                        : "text-red-600"
+                    }`}
                   >
-                    <div className="font-medium text-gray-900 mb-1">
-                      {sub.name}
-                    </div>
-                    <p className="text-sm whitespace-pre-wrap">
-                      {text ? text : "Geen opmerking ingevuld"}
-                    </p>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {grouped[status].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-4 rounded-xl border ${statusStyles[status]} shadow-sm`}
+                      >
+                        <div className="font-medium text-gray-900 mb-1">
+                          {item.name}
+                        </div>
+                        <p className="text-sm whitespace-pre-wrap">
+                          {item.text}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+                </div>
+              )
+          )
+        ) : (
+          <p className="text-gray-500 italic">
+            Geen data gevonden voor Framework 3.
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
 export default PdfPage;
-
-
-
-
-
-
 
 
 
