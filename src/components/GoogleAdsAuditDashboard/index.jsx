@@ -96,6 +96,7 @@ const GoogleAdsAuditDashboard = () => {
       context: JSON.parse(JSON.stringify(context)),
       totalScore,
       percentage,
+      
     };
 
     // Debug: check wat er gestuurd wordt

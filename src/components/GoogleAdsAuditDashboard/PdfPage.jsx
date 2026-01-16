@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { PieChart, Pie, Cell } from "recharts";
 import html2pdf from "html2pdf.js";
 import "./styles.css";
+import { addCustomerData } from "../../firestoreFunctions";
 
 
 
@@ -198,7 +199,7 @@ html2pdf().from(pdfRef.current).set(options).save();
     </div>
   </div>
 
-  {/* Framework 2 (zelfde stijl als score-kaart) */}
+  {/* Framework 2  */}
   <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center w-full max-w-5xl mb-10"
     style={{ pageBreakBefore: "always", pageBreakInside: "avoid" }}>
     <h3 className="text-lg font-medium text-gray-700 mb-4">
@@ -288,13 +289,44 @@ html2pdf().from(pdfRef.current).set(options).save();
   </button>
 </div>
 
+<button
+  onClick={async () => {
+    try {
+      await addCustomerData(state.customerId, {
+        scores,
+        pillars,
+        context,
+        totalScore,
+        percentage,
+      });
+      alert("Data opgeslagen voor deze klant!");
+    } catch (error) {
+      console.error(error);
+      alert("Opslaan mislukt");
+    }
+  }}
+  className="mt-4 px-6 py-3 bg-green-600 text-white rounded-lg shadow-md"
+>
+  Opslaan in database
+</button>
+
+
+
+
 </div>
+
+
+
+
+
 );
 
 
 
 
 };
+
+
 
 export default PdfPage;
 
